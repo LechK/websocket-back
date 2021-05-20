@@ -1,55 +1,73 @@
-const app = require("express")();
-const httpServer = require("http").createServer(app);
-const io = require("socket.io")(httpServer, {
-  //sometimes cors doesn't allow for us to make request from client-side, so those rules are NEEDED
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Access-Control-Allow-Origin"],
-    credentials: true,
-  },
-});
+const express = require("express");
+const app = express();
+const server = require("http").createServer(app);
+const WebSocket = require("ws");
 
-//connection
-io.on("connection", (socket) => {
+const wss = new WebSocket.Server(
+  { server: server },
+  {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Access-Control-Allow-Origin"],
+      credentials: true,
+    },
+  },
+);
+
+// const io = require("socket.io")(httpServer, {
+//   //sometimes cors doesn't allow for us to make request from client-side, so those rules are NEEDED
+//   cors: {
+//     origin: "http://localhost:3000",
+//     methods: ["GET", "POST"],
+//     allowedHeaders: ["Access-Control-Allow-Origin"],
+//     credentials: true,
+//   },
+// });
+
+wss.on("connection", (ws) => {
   console.log("[Server] A client was connected");
+  ws.send("Welcome Dmitrii!");
 
   //CLOSE NOT WORKING!! YET!!
-  io.on("close", () => console.log("[Server] Client Disconnected."));
+  wss.on("close", (ws) => {
+    console.log("[Server] Client Disconnected.");
+    ws.send("Ending this session!");
+  });
 
-  socket.on("gesture", ({ value }) => {
+  ws.on("gesture", ({ value }) => {
     //based on request value, we send them response as object
     switch (value) {
       case "swipeLeft": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "dynamicGesture",
           handID: "4",
           gesture: "Swipe Left",
         });
       }
       case "swipeRight": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "dynamicGesture",
           handID: "7",
           gesture: "Swipe Right",
         });
       }
       case "swipeUp": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "dynamicGesture",
           handID: "11",
           gesture: "Swipe Up",
         });
       }
       case "swipeDown": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "dynamicGesture",
           handID: "21",
           gesture: "Swipe Down",
         });
       }
       case "zoomIn": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "staticGesture",
           handID: "27",
           gesture: "Zoom",
@@ -59,7 +77,7 @@ io.on("connection", (socket) => {
         });
       }
       case "zoomOut": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "staticGesture",
           handID: "31",
           gesture: "Zoom",
@@ -69,7 +87,7 @@ io.on("connection", (socket) => {
         });
       }
       case "pointingUp": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "staticGesture",
           handID: "37",
           gesture: "Pointing",
@@ -79,7 +97,7 @@ io.on("connection", (socket) => {
         });
       }
       case "pointingDown": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "staticGesture",
           handID: "41",
           gesture: "Pointing",
@@ -89,7 +107,7 @@ io.on("connection", (socket) => {
         });
       }
       case "fist": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "staticGesture",
           handID: "43",
           gesture: "Fist",
@@ -99,7 +117,7 @@ io.on("connection", (socket) => {
         });
       }
       case "victory": {
-        return io.emit("response", {
+        return ws.emit("response", {
           objName: "staticGesture",
           handID: "53",
           gesture: "Victory",
@@ -109,7 +127,7 @@ io.on("connection", (socket) => {
         });
       }
       default: {
-        io.emit("response", {
+        ws.emit("response", {
           msg: "Waiting for gesture!",
         });
       }
@@ -118,6 +136,4 @@ io.on("connection", (socket) => {
 });
 
 //port picked as default, 4000
-httpServer.listen(4000, () => {
-  console.log("Server running on port 4000");
-});
+server.listen(8080, () => console.log("Server running on port 8080"));
