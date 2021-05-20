@@ -15,121 +15,124 @@ const wss = new WebSocket.Server(
   },
 );
 
-// const io = require("socket.io")(httpServer, {
-//   //sometimes cors doesn't allow for us to make request from client-side, so those rules are NEEDED
-//   cors: {
-//     origin: "http://localhost:3000",
-//     methods: ["GET", "POST"],
-//     allowedHeaders: ["Access-Control-Allow-Origin"],
-//     credentials: true,
-//   },
-// });
-
-wss.on("connection", (ws) => {
+wss.on("connection", function connection(socket) {
   console.log("[Server] A client was connected");
-  ws.send("Welcome Dmitrii!");
+  socket.send("Welcome New Client!");
 
-  //CLOSE NOT WORKING!! YET!!
-  wss.on("close", (ws) => {
-    console.log("[Server] Client Disconnected.");
-    ws.send("Ending this session!");
-  });
-
-  ws.on("gesture", ({ value }) => {
+  socket.on("message", function incoming(message) {
+    console.log("received:", message);
     //based on request value, we send them response as object
-    switch (value) {
+    switch (message) {
       case "swipeLeft": {
-        return ws.emit("response", {
-          objName: "dynamicGesture",
-          handID: "4",
-          gesture: "Swipe Left",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "dynamicGesture",
+            handID: "4",
+            gesture: "Swipe Left",
+          }),
+        );
       }
       case "swipeRight": {
-        return ws.emit("response", {
-          objName: "dynamicGesture",
-          handID: "7",
-          gesture: "Swipe Right",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "dynamicGesture",
+            handID: "7",
+            gesture: "Swipe Right",
+          }),
+        );
       }
       case "swipeUp": {
-        return ws.emit("response", {
-          objName: "dynamicGesture",
-          handID: "11",
-          gesture: "Swipe Up",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "dynamicGesture",
+            handID: "7",
+            gesture: "Swipe Up",
+          }),
+        );
       }
       case "swipeDown": {
-        return ws.emit("response", {
-          objName: "dynamicGesture",
-          handID: "21",
-          gesture: "Swipe Down",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "dynamicGesture",
+            handID: "7",
+            gesture: "Swipe Down",
+          }),
+        );
       }
       case "zoomIn": {
-        return ws.emit("response", {
-          objName: "staticGesture",
-          handID: "27",
-          gesture: "Zoom",
-          orientation: "In",
-          handSide: "Unknown",
-          handFace: "Front",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "staticGesture",
+            handID: "27",
+            gesture: "Zoom",
+            orientation: "In",
+            handSide: "Unknown",
+            handFace: "Front",
+          }),
+        );
       }
       case "zoomOut": {
-        return ws.emit("response", {
-          objName: "staticGesture",
-          handID: "31",
-          gesture: "Zoom",
-          orientation: "Out",
-          handSide: "Unknown",
-          handFace: "Right",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "staticGesture",
+            handID: "31",
+            gesture: "Zoom",
+            orientation: "Out",
+            handSide: "Unknown",
+            handFace: "Right",
+          }),
+        );
       }
       case "pointingUp": {
-        return ws.emit("response", {
-          objName: "staticGesture",
-          handID: "37",
-          gesture: "Pointing",
-          orientation: "Up",
-          handSide: "Right",
-          handFace: "Front",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "staticGesture",
+            handID: "37",
+            gesture: "Pointing",
+            orientation: "Up",
+            handSide: "Right",
+            handFace: "Front",
+          }),
+        );
       }
       case "pointingDown": {
-        return ws.emit("response", {
-          objName: "staticGesture",
-          handID: "41",
-          gesture: "Pointing",
-          orientation: "Down",
-          handSide: "Right",
-          handFace: "Front",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "staticGesture",
+            handID: "41",
+            gesture: "Pointing",
+            orientation: "Down",
+            handSide: "Right",
+            handFace: "Front",
+          }),
+        );
       }
       case "fist": {
-        return ws.emit("response", {
-          objName: "staticGesture",
-          handID: "43",
-          gesture: "Fist",
-          orientation: "Unknown",
-          handSide: "Unknown",
-          handFace: "Unknown",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "staticGesture",
+            handID: "43",
+            gesture: "Fist",
+            orientation: "Unknown",
+            handSide: "Unknown",
+            handFace: "Unknown",
+          }),
+        );
       }
       case "victory": {
-        return ws.emit("response", {
-          objName: "staticGesture",
-          handID: "53",
-          gesture: "Victory",
-          orientation: "Unknown",
-          handSide: "Right",
-          handFace: "Front",
-        });
+        return socket.send(
+          JSON.stringify({
+            objName: "staticGesture",
+            handID: "53",
+            gesture: "Victory",
+            orientation: "Unknown",
+            handSide: "Right",
+            handFace: "Front",
+          }),
+        );
       }
       default: {
-        ws.emit("response", {
-          msg: "Waiting for gesture!",
-        });
+        socket.send("Waiting for gesture!");
       }
     }
   });
