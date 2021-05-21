@@ -21,10 +21,16 @@ wss.on("connection", function connection(socket) {
 
   socket.on("message", function incoming(message) {
     console.log("received:", message);
-    //based on request value, we send them response as object
+    wss.broadcast(message);
+  });
+});
+
+wss.broadcast = function broadcast(message) {
+  console.log(message);
+  wss.clients.forEach(function each(client) {
     switch (message) {
       case "swipeLeft": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "dynamicGesture",
             handID: "4",
@@ -33,7 +39,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "swipeRight": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "dynamicGesture",
             handID: "7",
@@ -42,7 +48,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "swipeUp": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "dynamicGesture",
             handID: "7",
@@ -51,7 +57,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "swipeDown": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "dynamicGesture",
             handID: "7",
@@ -60,7 +66,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "zoomIn": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "staticGesture",
             handID: "27",
@@ -72,7 +78,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "zoomOut": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "staticGesture",
             handID: "31",
@@ -84,7 +90,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "pointingUp": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "staticGesture",
             handID: "37",
@@ -96,7 +102,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "pointingDown": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "staticGesture",
             handID: "41",
@@ -108,7 +114,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "fist": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "staticGesture",
             handID: "43",
@@ -120,7 +126,7 @@ wss.on("connection", function connection(socket) {
         );
       }
       case "victory": {
-        return socket.send(
+        return client.send(
           JSON.stringify({
             objName: "staticGesture",
             handID: "53",
@@ -131,12 +137,26 @@ wss.on("connection", function connection(socket) {
           }),
         );
       }
+      case "poi": {
+        return client.send(
+          JSON.stringify({
+            popup: "poi",
+          }),
+        );
+      }
+      case "incomingCall": {
+        return client.send(
+          JSON.stringify({
+            popup: "incomingCall",
+          }),
+        );
+      }
       default: {
-        socket.send("Waiting for gesture!");
+        client.send("Waiting for gesture!");
       }
     }
   });
-});
+};
 
 //port picked as default, 4000
 server.listen(8080, () => console.log("Server running on port 8080"));
